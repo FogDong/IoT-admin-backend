@@ -1,0 +1,18 @@
+version: '3.3'
+services:
+  api:
+    container_name: 'IoT-admin'
+    build: '.'
+    ports:
+      - '9002:9002'
+    volumes:
+      - '.:/go/src/IoT-admin'
+    links:
+      - mongo
+    environment:
+      MONGODB_URL: mongodb://mongo:27017/IoT-admin
+  mongo:
+    image: 'mongo:latest'
+    container_name: 'mongo'
+    ports:
+      - '27010:27017'

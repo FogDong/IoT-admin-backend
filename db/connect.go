@@ -18,7 +18,7 @@ var (
 const (
 	// MongoDBUrl is the default mongodb url that will be used to connect to the
 	// database.
-	MongoDBUrl = "mongodb://localhost:27017/IoT-admin"
+	MongoDBUrl = "mongodb://mongo:27010/IoT-admin"
 )
 
 // Connect connects to mongodb

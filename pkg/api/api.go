@@ -6,4 +6,9 @@ import (
 
 func RunHTTPServer(engine *gin.Engine) {
 	GetUserAPI(engine)
+	GetOrganizationAPI(engine)
+	GetCustomerAPI(engine)
+	GetProductAPI(engine)
+	GetMappingAPI(engine)
+	GetDeviceAPI(engine)
 }
