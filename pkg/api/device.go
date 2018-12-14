@@ -19,5 +19,5 @@ func GetDeviceAPI(engine *gin.Engine) {
 
 	v1.GET("/customer/:_id/device", handler.ListCustomerDevices)
 	v1.GET("/product/:_id/device", handler.ListProductDevices)
-	v1.GET("/customer/:_cid/product/:_id/device", handler.ListCustomerProductDevices)
+	v1.GET("/customerproduct/device", handler.ListCustomerProductDevices)
 }

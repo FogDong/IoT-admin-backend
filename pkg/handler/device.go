@@ -243,8 +243,8 @@ func ListCustomerProductDevices(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var devices []models.Device
 	query := bson.M{
-		"customerId": bson.ObjectIdHex(c.Param("_cid")),
-		"productID":  bson.ObjectIdHex(c.Param("_id")),
+		"customerId": bson.ObjectIdHex(c.Request.Header.Get("cid")),
+		"productID":  bson.ObjectIdHex(c.Request.Header.Get("pid")),
 	}
 	err := db.C(models.CollectionDevice).Find(query).All(&devices)
 	if err != nil {
