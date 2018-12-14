@@ -19,6 +19,6 @@ func GetUserAPI(engine *gin.Engine) {
 	v1.PUT("/user/:_id", handler.UpdateUser)
 	v1.DELETE("/user/:_id", handler.DeleteUser)
 
-	v1.GET("/organization/:_id/user", handler.ListCustomerUsers)
+	v1.GET("/organization/:_id/user", handler.ListOrgUsers)
 	v1.GET("/customer/:_id/user", handler.ListCustomerUsers)
 }

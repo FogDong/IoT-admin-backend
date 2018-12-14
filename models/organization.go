@@ -13,7 +13,7 @@ const (
 
 // Organization model
 type Organization struct {
-	Id            bson.ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
+	ID            bson.ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
 	Name          string        `json:"name" binding:"required" bson:"name"`
 	Description   string        `json:"description,omitempty" bson:"description,omitempty"`
 	Address       string        `json:"address,omitempty" bson:"address,omitempty"`

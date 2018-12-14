@@ -19,10 +19,17 @@ func ListOrg(c *gin.Context) {
 	var orgs []models.Organization
 	err := db.C(models.CollectionOrg).Find(nil).All(&orgs)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, orgs)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   orgs,
+	})
 }
 
 // Get a organization
@@ -34,10 +41,17 @@ func GetOrg(c *gin.Context) {
 		FindId(bson.ObjectIdHex(c.Param("_id"))).
 		One(&org)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, org)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   org,
+	})
 }
 
 // Create a organization
@@ -55,22 +69,63 @@ func CreateOrg(c *gin.Context) {
 
 	err = db.C(models.CollectionOrg).Insert(org)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
-	c.JSON(http.StatusOK, org)
+	err = db.C(models.CollectionUser).Update(bson.M{"_id": org.CreatedBy},
+		bson.M{"$inc": bson.M{"orgCount": 1}})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+	})
 }
 
 // Delete organization
 func DeleteOrg(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 
-	query := bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))}
-	err := db.C(models.CollectionOrg).Remove(query)
+	var org models.Organization
+
+	err := db.C(models.CollectionOrg).
+		FindId(bson.ObjectIdHex(c.Param("_id"))).
+		One(&org)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, nil)
+	err = db.C(models.CollectionUser).Update(bson.M{"_id": org.CreatedBy},
+		bson.M{"$inc": bson.M{"orgCount": -1}})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
+	}
+
+	err = db.C(models.CollectionOrg).Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+	})
 }
 
 // Update organization
@@ -91,8 +146,15 @@ func UpdateOrg(c *gin.Context) {
 
 	err = db.C(models.CollectionOrg).Update(query, org)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, org)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   org,
+	})
 }

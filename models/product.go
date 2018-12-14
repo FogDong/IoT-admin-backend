@@ -13,13 +13,13 @@ const (
 
 // Product model
 type Product struct {
-	Id             bson.ObjectId   `json:"_id" bson:"_id"`
+	ID             bson.ObjectId   `json:"_id" bson:"_id"`
 	Name           string          `json:"name" bson:"name"`
 	Description    string          `json:"description,omitempty" bson:"description,omitempty"`
 	ProductKey     string          `json:"productKey,omitempty" bson:"productKey,omitempty"`
 	ProductSecret  string          `json:"productSecret,omitempty" bson:"productSecret,omitempty"`
-	OrganizationId bson.ObjectId   `json:"organizationId" bson:"organizationId"`
-	//ProductId      []bson.ObjectId `json:"productId" bson:"productId"`
+	OrganizationID bson.ObjectId   `json:"organizationId" bson:"organizationId"`
+	CustomerID     []bson.ObjectId `json:"customerId,omitempty" bson:"customerId,omitempty"`
 	CreatedBy      bson.ObjectId   `json:"createdBy" bson:"createdBy"`
 	CreatedAt      time.Time       `json:"createdAt" bson:"createdAt"`
 	Specification  Specification
@@ -27,10 +27,10 @@ type Product struct {
 }
 
 type Specification struct {
-	Identifier     string `json:"identifier,omitempty" bson:"identifier,omitempty"`
-	Name           string `json:"name,omitempty" bson:"name,omitempty"`
-	Description    string `json:"description,omitempty" bson:"description,omitempty"`
-	DataType       DataType
+	Identifier  string `json:"identifier,omitempty" bson:"identifier,omitempty"`
+	Name        string `json:"name,omitempty" bson:"name,omitempty"`
+	Description string `json:"description,omitempty" bson:"description,omitempty"`
+	DataType    DataType
 }
 
 type DataType struct {

@@ -16,14 +16,21 @@ func ListMapping(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var mappings []models.Mapping
 	query := bson.M{
-		"productId": bson.ObjectIdHex(c.Param("_id")),
+		"productID": bson.ObjectIdHex(c.Param("_id")),
 	}
 	err := db.C(models.CollectionMapping).Find(query).All(&mappings)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, mappings)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   mappings,
+	})
 }
 
 // Get a mapping
@@ -35,10 +42,17 @@ func GetMapping(c *gin.Context) {
 		FindId(bson.ObjectIdHex(c.Param("_id"))).
 		One(&mapping)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, mapping)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   mapping,
+	})
 }
 
 // Create a mapping
@@ -54,9 +68,16 @@ func CreateMapping(c *gin.Context) {
 
 	err = db.C(models.CollectionProduct).Insert(mapping)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
-	c.JSON(http.StatusOK, mapping)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+	})
 }
 
 // Delete mapping
@@ -66,10 +87,16 @@ func DeleteMapping(c *gin.Context) {
 	query := bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))}
 	err := db.C(models.CollectionMapping).Remove(query)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, nil)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+	})
 }
 
 // Update mapping
@@ -92,9 +119,15 @@ func UpdateMapping(c *gin.Context) {
 	// 更新
 	err = db.C(models.CollectionProduct).Update(query, mapping)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, mapping)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   mapping,
+	})
 }
-

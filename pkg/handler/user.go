@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -23,10 +22,17 @@ func ListUser(c *gin.Context) {
 	var users []models.User
 	err := db.C(models.CollectionUser).Find(nil).All(&users)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   users,
+	})
 }
 
 // Get a user
@@ -38,10 +44,17 @@ func GetUser(c *gin.Context) {
 		FindId(bson.ObjectIdHex(c.Param("_id"))).
 		One(&user)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   user,
+	})
 }
 
 // Create a user
@@ -57,22 +70,88 @@ func CreateUser(c *gin.Context) {
 
 	err = db.C(models.CollectionUser).Insert(user)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
-	c.JSON(http.StatusOK, user)
+
+	if user.OrganizationID != "" {
+		err = db.C(models.CollectionOrg).Update(bson.M{"_id": user.OrganizationID},
+			bson.M{"$inc": bson.M{"memberCount": 1}})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err,
+			})
+		}
+	}
+	if user.CustomerID != "" {
+		err = db.C(models.CollectionCustomer).Update(bson.M{"_id": user.CustomerID},
+			bson.M{"$inc": bson.M{"memberCount": 1}})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err,
+			})
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+	})
 }
 
 // Delete user
 func DeleteUser(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 
-	query := bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))}
-	err := db.C(models.CollectionUser).Remove(query)
+	var user models.User
+
+	err := db.C(models.CollectionUser).
+		FindId(bson.ObjectIdHex(c.Param("_id"))).
+		One(&user)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, nil)
+	err = db.C(models.CollectionUser).Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
+	}
+
+	if user.OrganizationID != "" {
+		err = db.C(models.CollectionOrg).Update(bson.M{"_id": user.OrganizationID},
+			bson.M{"$inc": bson.M{"memberCount": -1}})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err,
+			})
+		}
+	}
+	if user.CustomerID != "" {
+		err = db.C(models.CollectionCustomer).Update(bson.M{"_id": user.CustomerID},
+			bson.M{"$inc": bson.M{"memberCount": -1}})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err,
+			})
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+	})
 }
 
 // Update user
@@ -86,7 +165,6 @@ func UpdateUser(c *gin.Context) {
 
 		return
 	}
-	fmt.Print(user)
 
 	// 查找原来的文档
 	query := bson.M{
@@ -96,10 +174,17 @@ func UpdateUser(c *gin.Context) {
 	// 更新
 	err = db.C(models.CollectionUser).Update(query, user)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   user,
+	})
 }
 
 // List all organization users
@@ -107,15 +192,22 @@ func ListOrgUsers(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var users []models.User
 	query := bson.M{
-		"orgnizationId": bson.ObjectIdHex(c.Param("_id")),
+		"orgnizationID": bson.ObjectIdHex(c.Param("_id")),
 		"type":          1,
 	}
 	err := db.C(models.CollectionUser).Find(query).All(&users)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   users,
+	})
 }
 
 // List all customer users
@@ -123,15 +215,22 @@ func ListCustomerUsers(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var users []models.User
 	query := bson.M{
-		"customerId": bson.ObjectIdHex(c.Param("_id")),
+		"customerID": bson.ObjectIdHex(c.Param("_id")),
 		"type":       2,
 	}
 	err := db.C(models.CollectionUser).Find(query).All(&users)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err,
+		})
 	}
 
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   users,
+	})
 }
 
 // LoginResult 登录结果结构
@@ -157,7 +256,7 @@ func Login(c *gin.Context) {
 			c.Error(err)
 		}
 
-		if user.Password != loginReq.Password {
+		if user.Password == "" || user.Password != loginReq.Password {
 			c.JSON(http.StatusOK, gin.H{
 				"status": -1,
 				"msg":    "Wrong Password!",
@@ -179,7 +278,7 @@ func generateToken(c *gin.Context, user models.User) {
 		[]byte("FogDong"),
 	}
 	claims := myjwt.CustomClaims{
-		user.Id,
+		user.ID,
 		user.Email,
 		jwtgo.StandardClaims{
 			NotBefore: int64(time.Now().Unix() - 1000), // 签名生效时间

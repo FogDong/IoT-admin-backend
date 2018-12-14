@@ -16,4 +16,8 @@ func GetDeviceAPI(engine *gin.Engine) {
 	v1.POST("/device", handler.CreateDevice)
 	v1.PUT("/device/:_id", handler.UpdateDevice)
 	v1.DELETE("/device/:_id", handler.DeleteDevice)
+
+	v1.GET("/customer/:_id/device", handler.ListCustomerDevices)
+	v1.GET("/product/:_id/device", handler.ListProductDevices)
+	v1.GET("/customer/:_cid/product/:_id/device", handler.ListCustomerProductDevices)
 }
