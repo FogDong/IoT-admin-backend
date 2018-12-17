@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -21,8 +20,9 @@ func ListOrg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -43,8 +43,9 @@ func GetOrg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -61,9 +62,11 @@ func CreateOrg(c *gin.Context) {
 	var org models.Organization
 	err := c.BindJSON(&org)
 	org.CreatedAt = time.Now()
-	fmt.Print(org)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 
@@ -71,16 +74,18 @@ func CreateOrg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": org.CreatedBy},
 		bson.M{"$inc": bson.M{"orgCount": 1}})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -101,8 +106,9 @@ func DeleteOrg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": org.CreatedBy},
@@ -110,16 +116,18 @@ func DeleteOrg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionOrg).Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -148,8 +156,9 @@ func UpdateOrg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{

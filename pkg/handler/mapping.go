@@ -16,14 +16,15 @@ func ListMapping(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var mappings []models.Mapping
 	query := bson.M{
-		"productID": bson.ObjectIdHex(c.Param("_id")),
+		"productId": bson.ObjectIdHex(c.Param("_id")),
 	}
 	err := db.C(models.CollectionMapping).Find(query).All(&mappings)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -44,8 +45,9 @@ func GetMapping(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -70,8 +72,9 @@ func CreateMapping(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -89,8 +92,9 @@ func DeleteMapping(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -106,8 +110,10 @@ func UpdateMapping(c *gin.Context) {
 	var mapping models.Mapping
 	err := c.BindJSON(&mapping)
 	if err != nil {
-		c.Error(err)
-
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 
@@ -121,8 +127,9 @@ func UpdateMapping(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{

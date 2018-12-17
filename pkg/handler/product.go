@@ -19,8 +19,9 @@ func ListProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -41,8 +42,9 @@ func GetProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -59,7 +61,10 @@ func CreateProduct(c *gin.Context) {
 	var product models.Product
 	err := c.BindJSON(&product)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 
@@ -67,8 +72,9 @@ func CreateProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": product.CreatedBy},
@@ -76,8 +82,9 @@ func CreateProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionCustomer).Update(bson.M{"_id": product.CustomerID},
@@ -85,8 +92,9 @@ func CreateProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": product.OrganizationID},
@@ -94,8 +102,9 @@ func CreateProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -116,8 +125,9 @@ func DeleteProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": product.CreatedBy},
@@ -125,8 +135,9 @@ func DeleteProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionCustomer).Update(bson.M{"_id": product.CustomerID},
@@ -134,8 +145,9 @@ func DeleteProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": product.OrganizationID},
@@ -143,16 +155,18 @@ func DeleteProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionProduct).Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -183,8 +197,9 @@ func UpdateProduct(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -199,14 +214,15 @@ func ListOrgProducts(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var products []models.Product
 	query := bson.M{
-		"orgnizationID": bson.ObjectIdHex(c.Param("_id")),
+		"orgnizationId": bson.ObjectIdHex(c.Param("_id")),
 	}
 	err := db.C(models.CollectionProduct).Find(query).All(&products)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -230,8 +246,9 @@ func ListCustomerProducts(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	for _, id := range customer.ProductID {
@@ -242,8 +259,9 @@ func ListCustomerProducts(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"status": 500,
-				"msg":    err,
+				"msg":    err.Error(),
 			})
+			return
 		} else {
 			products = append(products, product)
 		}

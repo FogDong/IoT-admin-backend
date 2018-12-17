@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -24,8 +23,9 @@ func ListUser(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -46,8 +46,9 @@ func GetUser(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -64,7 +65,10 @@ func CreateUser(c *gin.Context) {
 	var user models.User
 	err := c.BindJSON(&user)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 
@@ -72,8 +76,9 @@ func CreateUser(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	if user.OrganizationID != "" {
@@ -82,8 +87,9 @@ func CreateUser(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"status": 500,
-				"msg":    err,
+				"msg":    err.Error(),
 			})
+			return
 		}
 	}
 	if user.CustomerID != "" {
@@ -92,8 +98,9 @@ func CreateUser(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"status": 500,
-				"msg":    err,
+				"msg":    err.Error(),
 			})
+			return
 		}
 	}
 
@@ -115,16 +122,18 @@ func DeleteUser(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionUser).Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	if user.OrganizationID != "" {
@@ -133,8 +142,9 @@ func DeleteUser(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"status": 500,
-				"msg":    err,
+				"msg":    err.Error(),
 			})
+			return
 		}
 	}
 	if user.CustomerID != "" {
@@ -143,8 +153,9 @@ func DeleteUser(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"status": 500,
-				"msg":    err,
+				"msg":    err.Error(),
 			})
+			return
 		}
 	}
 
@@ -161,8 +172,10 @@ func UpdateUser(c *gin.Context) {
 	var user models.User
 	err := c.BindJSON(&user)
 	if err != nil {
-		c.Error(err)
-
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 
@@ -176,8 +189,9 @@ func UpdateUser(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -192,15 +206,16 @@ func ListOrgUsers(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var users []models.User
 	query := bson.M{
-		"orgnizationID": bson.ObjectIdHex(c.Param("_id")),
-		"type":          1,
+		"organizationId": bson.ObjectIdHex(c.Param("_id")),
+		"type":           1,
 	}
 	err := db.C(models.CollectionUser).Find(query).All(&users)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -215,15 +230,16 @@ func ListCustomerUsers(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var users []models.User
 	query := bson.M{
-		"customerID": bson.ObjectIdHex(c.Param("_id")),
+		"customerId": bson.ObjectIdHex(c.Param("_id")),
 		"type":       2,
 	}
 	err := db.C(models.CollectionUser).Find(query).All(&users)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -253,7 +269,11 @@ func Login(c *gin.Context) {
 			Find(query).
 			One(&user)
 		if err != nil {
-			c.Error(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err.Error(),
+			})
+			return
 		}
 
 		if user.Password == "" || user.Password != loginReq.Password {
@@ -296,8 +316,6 @@ func generateToken(c *gin.Context, user models.User) {
 		})
 		return
 	}
-
-	log.Println(token)
 
 	data := LoginResult{
 		User:  user,

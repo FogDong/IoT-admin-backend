@@ -19,8 +19,9 @@ func ListDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -41,8 +42,9 @@ func GetDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -59,7 +61,10 @@ func CreateDevice(c *gin.Context) {
 	var device models.Device
 	err := c.BindJSON(&device)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 
@@ -67,8 +72,9 @@ func CreateDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": device.CreatedBy},
@@ -76,8 +82,9 @@ func CreateDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionCustomer).Update(bson.M{"_id": device.CustomerID},
@@ -85,8 +92,9 @@ func CreateDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": device.OrganizationID},
@@ -94,8 +102,9 @@ func CreateDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -116,8 +125,9 @@ func DeleteDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": device.CreatedBy},
@@ -125,8 +135,9 @@ func DeleteDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionCustomer).Update(bson.M{"_id": device.CustomerID},
@@ -134,8 +145,9 @@ func DeleteDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": device.OrganizationID},
@@ -143,16 +155,18 @@ func DeleteDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	err = db.C(models.CollectionDevice).Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -168,8 +182,10 @@ func UpdateDevice(c *gin.Context) {
 	var device models.Device
 	err := c.BindJSON(&device)
 	if err != nil {
-		c.Error(err)
-
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 
@@ -183,8 +199,9 @@ func UpdateDevice(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -199,14 +216,15 @@ func ListCustomerDevices(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var devices []models.Device
 	query := bson.M{
-		"customerID": bson.ObjectIdHex(c.Param("_id")),
+		"customerId": bson.ObjectIdHex(c.Param("_id")),
 	}
 	err := db.C(models.CollectionDevice).Find(query).All(&devices)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -221,14 +239,15 @@ func ListProductDevices(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var devices []models.Device
 	query := bson.M{
-		"productID": bson.ObjectIdHex(c.Param("_id")),
+		"productId": bson.ObjectIdHex(c.Param("_id")),
 	}
 	err := db.C(models.CollectionDevice).Find(query).All(&devices)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -244,14 +263,15 @@ func ListCustomerProductDevices(c *gin.Context) {
 	var devices []models.Device
 	query := bson.M{
 		"customerId": bson.ObjectIdHex(c.Request.Header.Get("cid")),
-		"productID":  bson.ObjectIdHex(c.Request.Header.Get("pid")),
+		"productId":  bson.ObjectIdHex(c.Request.Header.Get("pid")),
 	}
 	err := db.C(models.CollectionDevice).Find(query).All(&devices)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
-			"msg":    err,
+			"msg":    err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
