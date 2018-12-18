@@ -11,7 +11,7 @@ const (
 
 // Mapping model
 type Mapping struct {
-	ID          bson.ObjectId `json:"_id" bson:"_id"`
+	ID          bson.ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
 	Name        string        `json:"name" bson:"name"`
 	Description string        `json:"description,omitempty" bson:"description,omitempty"`
 	ProductID   bson.ObjectId `json:"productId" bson:"productId"`

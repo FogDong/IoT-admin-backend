@@ -13,7 +13,7 @@ const (
 
 // Device model
 type Device struct {
-	ID             bson.ObjectId `json:"_id" bson:"_id"`
+	ID             bson.ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
 	Name           string        `json:"name" bson:"name"`
 	Status         int           `json:"status" bson:"status"`
 	Description    string        `json:"description,omitempty" bson:"description,omitempty"`

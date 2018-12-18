@@ -13,7 +13,7 @@ const (
 
 // Customer model
 type Customer struct {
-	ID             bson.ObjectId   `json:"_id" bson:"_id"`
+	ID             bson.ObjectId   `json:"_id,omitempty" bson:"_id,omitempty"`
 	Name           string          `json:"name" bson:"name"`
 	Description    string          `json:"description,omitempty" bson:"description,omitempty"`
 	OrganizationID bson.ObjectId   `json:"organizationId" bson:"organizationId"`
