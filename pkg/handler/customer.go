@@ -192,7 +192,7 @@ func ListOrgCustomers(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var customers []models.Customer
 	query := bson.M{
-		"orgnizationId": bson.ObjectIdHex(c.Param("_id")),
+		"organizationId": bson.ObjectIdHex(c.Param("_id")),
 	}
 	err := db.C(models.CollectionCustomer).Find(query).All(&customers)
 	if err != nil {

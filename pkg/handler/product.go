@@ -214,7 +214,7 @@ func ListOrgProducts(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var products []models.Product
 	query := bson.M{
-		"orgnizationId": bson.ObjectIdHex(c.Param("_id")),
+		"organizationId": bson.ObjectIdHex(c.Param("_id")),
 	}
 	err := db.C(models.CollectionProduct).Find(query).All(&products)
 	if err != nil {
