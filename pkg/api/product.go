@@ -17,6 +17,6 @@ func GetProductAPI(engine *gin.Engine) {
 	v1.PUT("/product/:_id", handler.UpdateProduct)
 	v1.DELETE("/product/:_id", handler.DeleteProduct)
 
-	v1.GET("/organiztion/:_id/product", handler.ListOrgProducts)
+	v1.GET("/organization/:_id/product", handler.ListOrgProducts)
 	v1.GET("/customer/:_id/product", handler.ListCustomerProducts)
 }
