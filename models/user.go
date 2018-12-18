@@ -1,6 +1,10 @@
 package models
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"time"
+
+	"gopkg.in/mgo.v2/bson"
+)
 
 const (
 	// CollectionUser holds the name of the user collection
@@ -19,6 +23,7 @@ type User struct {
 	Phone          string        `json:"phone,omitempty" bson:"phone,omitempty"`
 	FullName       string        `json:"fullname,omitempty" bson:"fullname,omitempty"`
 	CreatedBy      bson.ObjectId `json:"createdBy,omitempty" bson:"createdBy,omitempty"`
+	CreatedAt      time.Time     `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
 	OrganizationID bson.ObjectId `json:"organizationId,omitempty" bson:"organizationId,omitempty"`
 	CustomerID     bson.ObjectId `json:"customerId,omitempty" bson:"customerId,omitempty"`
 	OrgCount       int           `json:"orgCount,omitempty" bson:"orgCount,omitempty"`

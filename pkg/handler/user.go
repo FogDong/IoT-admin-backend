@@ -71,6 +71,7 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
+	user.CreatedAt = time.Now()
 
 	err = db.C(models.CollectionUser).Insert(user)
 	if err != nil {

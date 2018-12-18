@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"IoT-admin-backend/middleware"
 	"IoT-admin-backend/models"
 
 	"github.com/gin-gonic/gin"
@@ -67,6 +68,8 @@ func CreateDevice(c *gin.Context) {
 		})
 		return
 	}
+	claims := c.MustGet("claims").(*middleware.CustomClaims)
+	device.CreatedBy = claims.ID
 
 	err = db.C(models.CollectionDevice).Insert(device)
 	if err != nil {

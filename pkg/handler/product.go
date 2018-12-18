@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"IoT-admin-backend/middleware"
 	"IoT-admin-backend/models"
 
 	"github.com/gin-gonic/gin"
@@ -67,6 +68,8 @@ func CreateProduct(c *gin.Context) {
 		})
 		return
 	}
+	claims := c.MustGet("claims").(*middleware.CustomClaims)
+	product.CreatedBy = claims.ID
 
 	err = db.C(models.CollectionProduct).Insert(product)
 	if err != nil {
@@ -182,8 +185,10 @@ func UpdateProduct(c *gin.Context) {
 	var product models.Product
 	err := c.BindJSON(&product)
 	if err != nil {
-		c.Error(err)
-
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 

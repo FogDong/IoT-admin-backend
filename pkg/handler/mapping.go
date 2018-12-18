@@ -64,7 +64,10 @@ func CreateMapping(c *gin.Context) {
 	var mapping models.Mapping
 	err := c.BindJSON(&mapping)
 	if err != nil {
-		c.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 

@@ -7,6 +7,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"IoT-admin-backend/middleware"
 	"IoT-admin-backend/models"
 
 	"github.com/gin-gonic/gin"
@@ -61,7 +62,6 @@ func CreateOrg(c *gin.Context) {
 
 	var org models.Organization
 	err := c.BindJSON(&org)
-	org.CreatedAt = time.Now()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
@@ -69,6 +69,9 @@ func CreateOrg(c *gin.Context) {
 		})
 		return
 	}
+	org.CreatedAt = time.Now()
+	claims := c.MustGet("claims").(*middleware.CustomClaims)
+	org.CreatedBy = claims.ID
 
 	err = db.C(models.CollectionOrg).Insert(org)
 	if err != nil {
@@ -143,8 +146,10 @@ func UpdateOrg(c *gin.Context) {
 	var org models.Organization
 	err := c.BindJSON(&org)
 	if err != nil {
-		c.Error(err)
-
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
 		return
 	}
 
