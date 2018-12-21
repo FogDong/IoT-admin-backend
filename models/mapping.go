@@ -15,5 +15,6 @@ type Mapping struct {
 	Name        string        `json:"name" bson:"name"`
 	Description string        `json:"description,omitempty" bson:"description,omitempty"`
 	ProductID   bson.ObjectId `json:"productId" bson:"productId"`
+	ProductName string        `json:"productName" bson:"productName"`
 	Mapping     []string      `json:"mapping,omitempty" bson:"mapping,omitempty"`
 }

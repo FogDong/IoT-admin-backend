@@ -20,6 +20,7 @@ type Organization struct {
 	Contact       string        `json:"contact,omitempty" bson:"contact,omitempty"`
 	Phone         string        `json:"phone,omitempty" bson:"phone,omitempty"`
 	CreatedBy     bson.ObjectId `json:"createdBy" bson:"createdBy"`
+	CreatedName   string        `json:"createdName" bson:"createdName"`
 	CreatedAt     time.Time     `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
 	MemberCount   int           `json:"memberCount,omitempty" bson:"memberCount,omitempty"`
 	CustomerCount int           `json:"customerCount,omitempty" bson:"customerCount,omitempty"`

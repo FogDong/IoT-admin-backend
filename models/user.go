@@ -18,18 +18,21 @@ type User struct {
 	// 0: admin 1: organization 2: customer
 	Type int `json:"type" bson:"type"`
 	// 0: admin 1: user
-	Role           int           `json:"role" bson:"role"`
-	Password       string        `json:"password" binding:"required" bson:"password"`
-	Phone          string        `json:"phone,omitempty" bson:"phone,omitempty"`
-	FullName       string        `json:"fullname,omitempty" bson:"fullname,omitempty"`
-	CreatedBy      bson.ObjectId `json:"createdBy,omitempty" bson:"createdBy,omitempty"`
-	CreatedAt      time.Time     `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
-	OrganizationID bson.ObjectId `json:"organizationId,omitempty" bson:"organizationId,omitempty"`
-	CustomerID     bson.ObjectId `json:"customerId,omitempty" bson:"customerId,omitempty"`
-	OrgCount       int           `json:"orgCount,omitempty" bson:"orgCount,omitempty"`
-	CustomerCount  int           `json:"customerCount,omitempty" bson:"customerCount,omitempty"`
-	ProductCount   int           `json:"productCount,omitempty" bson:"productCount,omitempty"`
-	DeviceCount    int           `json:"deviceCount,omitempty" bson:"deviceCount,omitempty"`
+	Role             int           `json:"role" bson:"role"`
+	Password         string        `json:"password" binding:"required" bson:"password"`
+	Phone            string        `json:"phone,omitempty" bson:"phone,omitempty"`
+	FullName         string        `json:"fullname,omitempty" bson:"fullname,omitempty"`
+	CreatedBy        bson.ObjectId `json:"createdBy,omitempty" bson:"createdBy,omitempty"`
+	CreatedAt        time.Time     `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
+	OrganizationID   bson.ObjectId `json:"organizationId,omitempty" bson:"organizationId,omitempty"`
+	CustomerID       bson.ObjectId `json:"customerId,omitempty" bson:"customerId,omitempty"`
+	OrganizationName string        `json:"organizationName" bson:"organizationName"`
+	CreatedName      string        `json:"createdName" bson:"createdName"`
+	CustomerName     string        `json:"customerName" bson:"customerName"`
+	OrgCount         int           `json:"orgCount,omitempty" bson:"orgCount,omitempty"`
+	CustomerCount    int           `json:"customerCount,omitempty" bson:"customerCount,omitempty"`
+	ProductCount     int           `json:"productCount,omitempty" bson:"productCount,omitempty"`
+	DeviceCount      int           `json:"deviceCount,omitempty" bson:"deviceCount,omitempty"`
 }
 
 // Login param

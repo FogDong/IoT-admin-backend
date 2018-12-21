@@ -13,17 +13,20 @@ const (
 
 // Product model
 type Product struct {
-	ID             bson.ObjectId   `json:"_id,omitempty" bson:"_id,omitempty"`
-	Name           string          `json:"name" bson:"name"`
-	Description    string          `json:"description,omitempty" bson:"description,omitempty"`
-	ProductKey     string          `json:"productKey,omitempty" bson:"productKey,omitempty"`
-	ProductSecret  string          `json:"productSecret,omitempty" bson:"productSecret,omitempty"`
-	OrganizationID bson.ObjectId   `json:"organizationId" bson:"organizationId"`
-	CustomerID     []bson.ObjectId `json:"customerId,omitempty" bson:"customerId,omitempty"`
-	CreatedBy      bson.ObjectId   `json:"createdBy" bson:"createdBy"`
-	CreatedAt      time.Time       `json:"createdAt" bson:"createdAt"`
-	Specification  Specification
-	Tags           []string `json:"tags,omitempty" bson:"tags,omitempty"`
+	ID               bson.ObjectId   `json:"_id,omitempty" bson:"_id,omitempty"`
+	Name             string          `json:"name" bson:"name"`
+	Description      string          `json:"description,omitempty" bson:"description,omitempty"`
+	ProductKey       string          `json:"productKey,omitempty" bson:"productKey,omitempty"`
+	ProductSecret    string          `json:"productSecret,omitempty" bson:"productSecret,omitempty"`
+	OrganizationID   bson.ObjectId   `json:"organizationId" bson:"organizationId"`
+	CustomerID       []bson.ObjectId `json:"customerId,omitempty" bson:"customerId,omitempty"`
+	CreatedBy        bson.ObjectId   `json:"createdBy" bson:"createdBy"`
+	OrganizationName string          `json:"organizationName" bson:"organizationName"`
+	CreatedName      string          `json:"createdName" bson:"createdName"`
+	CustomerName     string          `json:"customerName" bson:"customerName"`
+	CreatedAt        time.Time       `json:"createdAt" bson:"createdAt"`
+	Specification    Specification
+	Tags             []string `json:"tags,omitempty" bson:"tags,omitempty"`
 }
 
 type Specification struct {
