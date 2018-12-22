@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"gopkg.in/mgo.v2"
@@ -53,6 +54,28 @@ func GetOrg(c *gin.Context) {
 		"status": 200,
 		"msg":    "Success",
 		"data":   org,
+	})
+}
+
+// List organizations from name
+func ListNameOrg(c *gin.Context) {
+	db := c.MustGet("db").(*mgo.Database)
+	var orgs []models.Organization
+	err := db.C(models.CollectionOrg).
+		Find(bson.M{"name": bson.M{"$regex": `/c.Param("name")/`}}).
+		All(&orgs)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   orgs,
 	})
 }
 
@@ -117,10 +140,12 @@ func DeleteOrg(c *gin.Context) {
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": org.CreatedBy},
 		bson.M{"$inc": bson.M{"orgCount": -1}})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"msg":    err.Error(),
-		})
+		if !strings.Contains(err.Error(), `not found`) {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err.Error(),
+			})
+		}
 		return
 	}
 

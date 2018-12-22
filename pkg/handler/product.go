@@ -55,6 +55,28 @@ func GetProduct(c *gin.Context) {
 	})
 }
 
+// List products from name
+func ListNameProduct(c *gin.Context) {
+	db := c.MustGet("db").(*mgo.Database)
+	var products []models.Product
+	err := db.C(models.CollectionProduct).
+		Find(bson.M{"name": bson.M{"$regex": `/c.Param("name")/`}}).
+		All(&products)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   products,
+	})
+}
+
 // Create a product
 func CreateProduct(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)

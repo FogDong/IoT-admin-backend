@@ -16,6 +16,9 @@ type Customer struct {
 	ID               bson.ObjectId   `json:"_id,omitempty" bson:"_id,omitempty"`
 	Name             string          `json:"name" bson:"name"`
 	Description      string          `json:"description,omitempty" bson:"description,omitempty"`
+	Address          string          `json:"address,omitempty" bson:"address,omitempty"`
+	Contact          string          `json:"contact,omitempty" bson:"contact,omitempty"`
+	Phone            string          `json:"phone,omitempty" bson:"phone,omitempty"`
 	OrganizationID   bson.ObjectId   `json:"organizationId" bson:"organizationId"`
 	ProductID        []bson.ObjectId `json:"productId,omitempty" bson:"productId,omitempty"`
 	CreatedBy        bson.ObjectId   `json:"createdBy" bson:"createdBy"`

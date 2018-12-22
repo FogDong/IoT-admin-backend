@@ -13,6 +13,7 @@ func GetCustomerAPI(engine *gin.Engine) {
 
 	v1.GET("/customer", handler.ListCustomer)
 	v1.GET("/customer/:_id", handler.GetCustomer)
+	v1.GET("/customername/:name", handler.ListNameCustomer)
 	v1.POST("/customer", handler.CreateCustomer)
 	v1.PUT("/customer/:_id", handler.UpdateCustomer)
 	v1.DELETE("/customer/:_id", handler.DeleteCustomer)

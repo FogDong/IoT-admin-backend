@@ -58,6 +58,29 @@ func GetUser(c *gin.Context) {
 	})
 }
 
+// Get a user from email 
+func GetEmail(c *gin.Context) {
+	db := c.MustGet("db").(*mgo.Database)
+	var user models.User
+
+	err := db.C(models.CollectionUser).
+		Find(bson.M{"email": c.Param("email")}).
+		One(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   user,
+	})
+}
+
 // Create a user
 func CreateUser(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)

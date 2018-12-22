@@ -13,6 +13,7 @@ func GetOrganizationAPI(engine *gin.Engine) {
 
 	v1.GET("/organization", handler.ListOrg)
 	v1.GET("/organization/:_id", handler.GetOrg)
+	v1.GET("/organizationname/:name", handler.ListNameOrg)
 	v1.POST("/organization", handler.CreateOrg)
 	v1.PUT("/organization/:_id", handler.UpdateOrg)
 	v1.DELETE("/organization/:_id", handler.DeleteOrg)

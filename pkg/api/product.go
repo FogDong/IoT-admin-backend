@@ -13,6 +13,7 @@ func GetProductAPI(engine *gin.Engine) {
 
 	v1.GET("/product", handler.ListProduct)
 	v1.GET("/product/:_id", handler.GetProduct)
+	v1.GET("/productname/:name", handler.ListNameProduct)
 	v1.POST("/product", handler.CreateProduct)
 	v1.PUT("/product/:_id", handler.UpdateProduct)
 	v1.DELETE("/product/:_id", handler.DeleteProduct)

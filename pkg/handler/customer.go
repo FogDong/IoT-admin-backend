@@ -55,6 +55,28 @@ func GetCustomer(c *gin.Context) {
 	})
 }
 
+// List customers from name
+func ListNameCustomer(c *gin.Context) {
+	db := c.MustGet("db").(*mgo.Database)
+	var customers []models.Customer
+	err := db.C(models.CollectionCustomer).
+		Find(bson.M{"name": bson.M{"$regex": `/c.Param("name")/`}}).
+		All(&customers)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "Success",
+		"data":   customers,
+	})
+}
+
 // Create a customer
 func CreateCustomer(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
