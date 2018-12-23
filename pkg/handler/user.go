@@ -79,6 +79,7 @@ func GetEmail(c *gin.Context) {
 				"status": 200,
 				"msg":    "not found",
 			})
+			return
 		}
 	}
 
