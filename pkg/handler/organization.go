@@ -61,8 +61,9 @@ func GetOrg(c *gin.Context) {
 func ListNameOrg(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var orgs []models.Organization
+	query := "/" + c.Param("name") + "/" 
 	err := db.C(models.CollectionOrg).
-		Find(bson.M{"name": bson.M{"$regex": `/c.Param("name")/`}}).
+		Find(bson.M{"name": bson.M{"$regex": query}}).
 		All(&orgs)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -145,8 +146,8 @@ func DeleteOrg(c *gin.Context) {
 				"status": 500,
 				"msg":    err.Error(),
 			})
+			return
 		}
-		return
 	}
 
 	err = db.C(models.CollectionOrg).Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))})

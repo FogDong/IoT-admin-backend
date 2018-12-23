@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"gopkg.in/mgo.v2"
@@ -58,7 +59,7 @@ func GetUser(c *gin.Context) {
 	})
 }
 
-// Get a user from email 
+// Get a user from email
 func GetEmail(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var user models.User
@@ -67,11 +68,18 @@ func GetEmail(c *gin.Context) {
 		Find(bson.M{"email": c.Param("email")}).
 		One(&user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"msg":    err.Error(),
-		})
-		return
+		if !strings.Contains(err.Error(), `not found`) {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err.Error(),
+			})
+			return
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"status": 200,
+				"msg":    "not found",
+			})
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{

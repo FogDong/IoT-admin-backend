@@ -59,8 +59,9 @@ func GetProduct(c *gin.Context) {
 func ListNameProduct(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var products []models.Product
+	query := "/" + c.Param("name") + "/" 
 	err := db.C(models.CollectionProduct).
-		Find(bson.M{"name": bson.M{"$regex": `/c.Param("name")/`}}).
+		Find(bson.M{"name": bson.M{"$regex": query}}).
 		All(&products)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

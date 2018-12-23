@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -59,8 +60,9 @@ func GetCustomer(c *gin.Context) {
 func ListNameCustomer(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var customers []models.Customer
+	query := "/" + c.Param("name") + "/"
 	err := db.C(models.CollectionCustomer).
-		Find(bson.M{"name": bson.M{"$regex": `/c.Param("name")/`}}).
+		Find(bson.M{"name": bson.M{"$regex": query}}).
 		All(&customers)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -148,11 +150,13 @@ func DeleteCustomer(c *gin.Context) {
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": customer.CreatedBy},
 		bson.M{"$inc": bson.M{"customerCount": -1}})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"msg":    err.Error(),
-		})
-		return
+		if !strings.Contains(err.Error(), `not found`) {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err.Error(),
+			})
+			return
+		}
 	}
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": customer.OrganizationID},
