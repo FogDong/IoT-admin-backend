@@ -103,6 +103,17 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
+	err = db.C(models.CollectionProduct).
+		FindId(bson.ObjectIdHex(c.Param("_id"))).
+		One(&product)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    err.Error(),
+		})
+		return
+	}
+
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": product.CreatedBy},
 		bson.M{"$inc": bson.M{"productCount": 1}})
 	if err != nil {
@@ -126,7 +137,7 @@ func CreateProduct(c *gin.Context) {
 	}
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": product.OrganizationID},
-		bson.M{"$inc": bson.M{"productCount": 1}})
+		bson.M{"$inc": bson.M{"productCount": 1, "$push": bson.M{"productId": product.ID}}})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
