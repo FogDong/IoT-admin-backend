@@ -93,19 +93,9 @@ func CreateProduct(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
 	product.CreatedBy = claims.ID
+	product.ID = bson.NewObjectId()
 
 	err = db.C(models.CollectionProduct).Insert(product)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"msg":    err.Error(),
-		})
-		return
-	}
-
-	err = db.C(models.CollectionProduct).
-		FindId(bson.ObjectIdHex(c.Param("_id"))).
-		One(&product)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
@@ -127,6 +117,8 @@ func CreateProduct(c *gin.Context) {
 	for _, id := range product.CustomerID {
 		err = db.C(models.CollectionCustomer).Update(bson.M{"_id": id},
 			bson.M{"$inc": bson.M{"productCount": 1, "$push": bson.M{"productId": product.ID}}})
+		err = db.C(models.CollectionCustomer).Update(bson.M{"_id": id},
+			bson.M{"$push": bson.M{"productId": product.ID}})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"status": 500,
@@ -138,6 +130,8 @@ func CreateProduct(c *gin.Context) {
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": product.OrganizationID},
 		bson.M{"$inc": bson.M{"productCount": 1, "$push": bson.M{"productId": product.ID}}})
+	err = db.C(models.CollectionOrg).Update(bson.M{"_id": product.OrganizationID},
+		bson.M{"$push": bson.M{"productId": product.ID}})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
