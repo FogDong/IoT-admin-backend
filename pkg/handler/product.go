@@ -59,7 +59,7 @@ func GetProduct(c *gin.Context) {
 func ListNameProduct(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	var products []models.Product
-	query := "/" + c.Param("name") + "/" 
+	query := "/" + c.Param("name") + "/"
 	err := db.C(models.CollectionProduct).
 		Find(bson.M{"name": bson.M{"$regex": query}}).
 		All(&products)
@@ -113,14 +113,16 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	err = db.C(models.CollectionCustomer).Update(bson.M{"_id": product.CustomerID},
-		bson.M{"$inc": bson.M{"productCount": 1}})
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"msg":    err.Error(),
-		})
-		return
+	for _, id := range product.CustomerID {
+		err = db.C(models.CollectionCustomer).Update(bson.M{"_id": id},
+			bson.M{"$inc": bson.M{"productCount": 1}})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err.Error(),
+			})
+			return
+		}
 	}
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": product.OrganizationID},
