@@ -162,11 +162,13 @@ func DeleteCustomer(c *gin.Context) {
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": customer.OrganizationID},
 		bson.M{"$inc": bson.M{"customerCount": -1}})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"msg":    err.Error(),
-		})
-		return
+		if !strings.Contains(err.Error(), `not found`) {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err.Error(),
+			})
+			return
+		}
 	}
 
 	err = db.C(models.CollectionCustomer).Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))})

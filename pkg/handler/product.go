@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -166,31 +167,37 @@ func DeleteProduct(c *gin.Context) {
 	err = db.C(models.CollectionUser).Update(bson.M{"_id": product.CreatedBy},
 		bson.M{"$inc": bson.M{"productCount": -1}})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"msg":    err.Error(),
-		})
-		return
+		if !strings.Contains(err.Error(), `not found`) {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err.Error(),
+			})
+			return
+		}
 	}
 
 	err = db.C(models.CollectionCustomer).Update(bson.M{"_id": product.CustomerID},
 		bson.M{"$inc": bson.M{"productCount": -1}})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"msg":    err.Error(),
-		})
-		return
+		if !strings.Contains(err.Error(), `not found`) {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err.Error(),
+			})
+			return
+		}
 	}
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": product.OrganizationID},
 		bson.M{"$inc": bson.M{"productCount": -1}})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"msg":    err.Error(),
-		})
-		return
+		if !strings.Contains(err.Error(), `not found`) {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status": 500,
+				"msg":    err.Error(),
+			})
+			return
+		}
 	}
 
 	err = db.C(models.CollectionProduct).Remove(bson.M{"_id": bson.ObjectIdHex(c.Param("_id"))})
