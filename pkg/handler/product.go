@@ -117,7 +117,7 @@ func CreateProduct(c *gin.Context) {
 
 	for _, id := range product.CustomerID {
 		err = db.C(models.CollectionCustomer).Update(bson.M{"_id": id},
-			bson.M{"$inc": bson.M{"productCount": 1, "$push": bson.M{"productId": product.ID}}})
+			bson.M{"$inc": bson.M{"productCount": 1}})
 		err = db.C(models.CollectionCustomer).Update(bson.M{"_id": id},
 			bson.M{"$push": bson.M{"productId": product.ID}})
 		if err != nil {
@@ -130,7 +130,7 @@ func CreateProduct(c *gin.Context) {
 	}
 
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": product.OrganizationID},
-		bson.M{"$inc": bson.M{"productCount": 1, "$push": bson.M{"productId": product.ID}}})
+		bson.M{"$inc": bson.M{"productCount": 1}})
 	err = db.C(models.CollectionOrg).Update(bson.M{"_id": product.OrganizationID},
 		bson.M{"$push": bson.M{"productId": product.ID}})
 	if err != nil {

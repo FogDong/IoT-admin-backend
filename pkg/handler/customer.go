@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -94,6 +95,7 @@ func CreateCustomer(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
 	customer.CreatedBy = claims.ID
+	customer.CreatedAt = time.Now()
 
 	err = db.C(models.CollectionCustomer).Insert(customer)
 	if err != nil {
