@@ -1,6 +1,6 @@
 # IoT-admin-backend
 
-~~是某次作业的代码~~
+~~是某次作业的代码，不知道为什么居然有人 star 于是补充一下 readme，大概大家都在为作业苦恼叭（~~
 
 ## Run
 go run main.go
